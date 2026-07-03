@@ -1587,7 +1587,7 @@ Metode Pembayaran      : ${infoMetode}
 
             `.trim();
 
-            const nomorAdmin = "89528440757";
+            const nomorAdmin = "6289528440757";
             window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
 
             // ── 6. TUTUP MODAL & RESET ────────────────────────
