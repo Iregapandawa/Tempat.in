@@ -1588,7 +1588,8 @@ Metode Pembayaran      : ${infoMetode}
             `.trim();
 
             const nomorAdmin = "6289528440757";
-            window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
+            const url = `https://api.whatsapp.com/send?phone=${nomorAdmin}&text=${encodeURIComponent(pesan)}`;
+            window.open(url, "_self");
 
             // ── 6. TUTUP MODAL & RESET ────────────────────────
             tutupModal();
