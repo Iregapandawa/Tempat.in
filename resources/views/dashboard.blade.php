@@ -485,40 +485,66 @@ db.ref("monitoring").on("value", snap => {
 });
 
 // ===============================
-// RIWAYAT - untuk grafik & jam sibuk
+// RIWAYAT - Grafik & Jam Sibuk
 // ===============================
-db.ref("reservasi").on("value", snap => {
+db.ref("riwayat").on("value", snap => {
+
     let jamMap = {};
 
     if (!snap.exists()) {
+
         chart.data.labels = [];
         chart.data.datasets[0].data = [];
         chart.update();
+
         document.getElementById("jam").innerText = "-";
         return;
     }
 
     snap.forEach(child => {
+
         const item = child.val();
+
+        // GANTI waktu -> jam
         if (!item || !item.jam) return;
-        const jamKey = item.jam.substring(0, 5);
-        jamMap[jamKey] = (jamMap[jamKey] || 0) + parseInt(item.jumlah_orang || 0);
+
+        const jam = item.jam.substring(0,2);
+
+        if(!jamMap[jam]){
+            jamMap[jam] = 0;
+        }
+
+        // jumlah orang yang masuk tiap jam
+        jamMap[jam] += parseInt(item.jumlah || 0);
+
     });
 
-    const sortedJam = Object.keys(jamMap).sort();
-    chart.data.labels = sortedJam;
-    chart.data.datasets[0].data = sortedJam.map(j => jamMap[j]);
+    const labels = [];
+
+    for(let i=8;i<=22;i++){
+        labels.push(i.toString().padStart(2,"0"));
+    }
+
+    chart.data.labels = labels.map(j => j + ":00");
+    chart.data.datasets[0].data = labels.map(j => jamMap[j] || 0);
     chart.update();
 
-    let jamPadat = "-";
-    let max = 0;
-    for (let j in jamMap) {
-        if (jamMap[j] > max) {
-            max = jamMap[j];
-            jamPadat = j;
+    let jamSibuk = "-";
+    let nilaiTerbesar = 0;
+
+    labels.forEach(j => {
+
+        if((jamMap[j] || 0) > nilaiTerbesar){
+
+            nilaiTerbesar = jamMap[j];
+            jamSibuk = j + ":00";
+
         }
-    }
-    document.getElementById("jam").innerText = jamPadat !== "-" ? jamPadat : "-";
+
+    });
+
+    document.getElementById("jam").innerText = jamSibuk;
+
 });
 
 // ===============================
